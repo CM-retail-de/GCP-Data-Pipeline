@@ -12,17 +12,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-
-The error indicates an issue with the format of the JSON file generated for the GCP credentials. Specifically, the key file written to /tmp/gcp-key.json is invalid, likely due to improper handling of the secrets in the workflow. Here's how to fix it:
-
-1. Ensure the GCP Secret is Properly Escaped
-The GCP_CREDENTIALS secret should contain a valid JSON service account key.
-Check the content of the secret in GitHub Actions settings to ensure it's correctly formatted JSON.
-2. Fix the Workflow Code
-Update the workflow to handle secrets securely and ensure the JSON is written correctly. Here's the corrected code:
-
-yaml
-Copy code
       - name: Authenticate to GCP
         env:
           GOOGLE_APPLICATION_CREDENTIALS: /tmp/gcp-key.json
