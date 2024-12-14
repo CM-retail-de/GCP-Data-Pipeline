@@ -31,7 +31,11 @@ jobs:
     
     # Set up GCP credentials using service account from GitHub Secrets
     - name: Set up GCP credentials
-      run: echo "${{ secrets.GCP_CREDENTIALS }}" > $HOME/gcp-key.json
+      run: |
+        echo "${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}" > $HOME/gcp-key.json
+        # Ensure the JSON is correctly formatted for gcloud to read
+        cat $HOME/gcp-key.json | jq . > $HOME/gcp-key-formatted.json
+        mv $HOME/gcp-key-formatted.json $HOME/gcp-key.json
 
     # Authenticate with Google Cloud
     - name: Authenticate with Google Cloud
@@ -39,7 +43,7 @@ jobs:
     
     # Set the project ID using the GitHub Secrets
     - name: Set GCP Project
-      run: gcloud config set project ${{ secrets.PROJECT_ID }}
+      run: gcloud config set project ${{ secrets.GCP_PROJECT_ID }}
 
     # Find and run all Python scripts in the data_ingestion folder
     - name: Run all Python scripts in data_ingestion
