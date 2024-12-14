@@ -2,4 +2,3 @@ google-cloud-storage
 google-cloud-bigquery
 apache-beam
 pytest
-json
