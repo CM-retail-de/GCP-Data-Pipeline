@@ -27,7 +27,7 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install -r requirements.txt
+        pip install -r requirement.txt
     
     # Set up GCP credentials using service account from GitHub Secrets
     - name: Set up GCP credentials
