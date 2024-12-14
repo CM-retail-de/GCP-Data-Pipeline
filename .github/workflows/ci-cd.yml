@@ -1,50 +1,28 @@
-name: Data Pipeline CI/CD
+name: GCP Python Script Workflow
 
 on:
   push:
-    branches:
-      - main
+    branches: [main]
   pull_request:
-    branches:
-      - main
+    branches: [main]
 
 jobs:
-  build:
+  build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v2
-
+      - uses: actions/checkout@v3
       - name: Set up Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v3
         with:
-          python-version: '3.8'
-
+          python-version: '3.11'
       - name: Install Dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirement.txt
-
-      - name: Authenticate with Google Cloud (Secure Method)
+        run: pip install -r requirements.txt
+      - name: Authenticate to GCP
         uses: GoogleCloudPlatform/github-action-credentials@v0.1.1
         with:
-          serviceAccountKey: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
-
+          serviceAccountKey: ${{ secrets.GCP_CREDENTIALS }}
       - name: Set GCP Project
-        run: gcloud config set project ${{ secrets.GCP_PROJECT_ID }}
-
-      - name: Run Data Ingestion Scripts
-        run: |
-          for script in data_ingestion/*.py; do
-            echo "Running $script"
-            python "$script"
-          done
-
-      - name: Test Data Pipeline (Optional)
-        run: |
-          pytest tests/
-
-      - name: Deploy to Production (Optional)
-        run: |
-          # Add deployment steps here
+        run: gcloud config set project ${{ secrets.PROJECT_ID }}
+      - name: Run Python Script
+        run: python your_script.py
