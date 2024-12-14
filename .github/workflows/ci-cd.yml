@@ -29,17 +29,10 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirement.txt
     
-    # Set up GCP credentials using service account from GitHub Secrets
-    - name: Set up GCP credentials
-      run: |
-        echo "${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}" > $HOME/gcp-key.json
-        # Ensure the JSON is correctly formatted for gcloud to read
-        cat $HOME/gcp-key.json | jq . > $HOME/gcp-key-formatted.json
-        mv $HOME/gcp-key-formatted.json $HOME/gcp-key.json
-
-    # Authenticate with Google Cloud
+    # Authenticate with Google Cloud using the service account JSON stored in GitHub Secrets
     - name: Authenticate with Google Cloud
-      run: gcloud auth activate-service-account --key-file=$HOME/gcp-key.json
+      run: |
+        echo "${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}" | gcloud auth activate-service-account --key-file=-
     
     # Set the project ID using the GitHub Secrets
     - name: Set GCP Project
