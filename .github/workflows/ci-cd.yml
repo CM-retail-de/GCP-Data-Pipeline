@@ -11,41 +11,40 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    
-    steps:
-    # Checkout the repository code
-    - name: Checkout Repository
-      uses: actions/checkout@v2
-    
-    # Set up Python environment
-    - name: Set up Python
-      uses: actions/setup-python@v2
-      with:
-        python-version: '3.8'  # Modify based on your Python version
-    
-    # Install dependencies from requirements.txt
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r requirement.txt
-    
-    # Authenticate with Google Cloud using the service account JSON stored in GitHub Secrets
-    - name: Authenticate with Google Cloud
-      run: |
-        echo "${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}" | gcloud auth activate-service-account --key-file=-
-    
-    # Set the project ID using the GitHub Secrets
-    - name: Set GCP Project
-      run: gcloud config set project ${{ secrets.GCP_PROJECT_ID }}
 
-    # Find and run all Python scripts in the data_ingestion folder
-    - name: Run all Python scripts in data_ingestion
-      run: |
-        for script in data_ingestion/*.py; do
-          echo "Running $script"
-          python "$script"
-        done
-    
-    # Optional: Clean up
-    - name: Clean up
-      run: rm $HOME/gcp-key.json
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.8'
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirement.txt
+
+      - name: Authenticate with Google Cloud (Secure Method)
+        uses: GoogleCloudPlatform/github-action-credentials@v0.1.1
+        with:
+          serviceAccountKey: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
+
+      - name: Set GCP Project
+        run: gcloud config set project ${{ secrets.GCP_PROJECT_ID }}
+
+      - name: Run Data Ingestion Scripts
+        run: |
+          for script in data_ingestion/*.py; do
+            echo "Running $script"
+            python "$script"
+          done
+
+      - name: Test Data Pipeline (Optional)
+        run: |
+          pytest tests/
+
+      - name: Deploy to Production (Optional)
+        run: |
+          # Add deployment steps here
