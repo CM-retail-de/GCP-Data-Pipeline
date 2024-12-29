@@ -1,4 +1,4 @@
-nname: Trigger Python Scripts on Any Change
+name: Trigger Python Scripts on Any Change
 
 on:
   push:  # Trigger workflow on any push event in the repository
