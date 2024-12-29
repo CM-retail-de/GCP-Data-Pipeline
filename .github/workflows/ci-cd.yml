@@ -33,28 +33,28 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      # Step 5: Identify and Process Changed Files
-      - name: Identify and Process Changed Files
+      # Step 5: Identify and Process Python Scripts
+      - name: Identify and Process Python Scripts
         env:
           GITHUB_SHA: ${{ github.sha }}
         run: |
-          # Default to processing all files if the previous commit is invalid
+          # Default to processing all Python scripts if the previous commit is invalid
           if git cat-file -e ${{ github.event.before }} 2>/dev/null; then
-            CHANGED_FILES=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }})
+            CHANGED_FILES=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }} -- '*.py')
           else
-            echo "Previous commit not found. Defaulting to all files in the repository."
-            CHANGED_FILES=$(git ls-files)
+            echo "Previous commit not found. Defaulting to all Python scripts in the repository."
+            CHANGED_FILES=$(git ls-files '*.py')
           fi
           
           if [ -z "$CHANGED_FILES" ]; then
-            echo "No files to process."
+            echo "No Python scripts to process."
             exit 0
           fi
 
-          echo "Processing the following files:"
+          echo "Processing the following Python scripts:"
           echo "$CHANGED_FILES"
 
           for FILE in $CHANGED_FILES; do
             echo "Running script for $FILE..."
-            python path/to/your_script.py --file $FILE
+            python "$FILE"
           done
