@@ -31,7 +31,7 @@ def create_bucket(bucket_name, location="US", storage_class="STANDARD"):
 
 if __name__ == "__main__":
     # Replace with your desired bucket name (must be globally unique)
-    BUCKET_NAME = "my-first-gcs-bucket-unique-name"
+    BUCKET_NAME = "my-first-gcs-bucket-chandra-name"
     LOCATION = "US"  # Replace with a region like "asia-south1" if needed
     STORAGE_CLASS = "STANDARD"  # Options: "NEARLINE", "COLDLINE", "ARCHIVE", etc.
 
