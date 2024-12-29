@@ -1,10 +1,9 @@
-name: Trigger Python Scripts on New Files
+nname: Trigger Python Scripts on Any Change
 
 on:
-  push:
-    paths:
-      - 'data_ingestion/**/*'       # Monitor the GCP directory and its subdirectories
-      - 'configs/**/*'              # Monitor the SQL directory and its subdirectories
+  push:  # Trigger workflow on any push event in the repository
+    branches:
+      - main       # Specify the branch (e.g., main). You can adjust this based on your branch.
 
 jobs:
   run-python-scripts:
