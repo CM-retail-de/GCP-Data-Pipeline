@@ -1,0 +1,17 @@
+- name: Authenticate with GCP
+  env:
+    GCP_SERVICE_ACCOUNT_KEY: ${{ secrets.GCP_CREDENTIALS }}
+  run: |
+    # Remove any newlines or extra spaces from the secret
+    echo "$GCP_SERVICE_ACCOUNT_KEY" | tr -d '\n' | base64 --decode > gcp-key.json
+
+    # Debugging: Verify the credentials file
+    ls -l gcp-key.json  # Check if the file was created
+    cat gcp-key.json    # Optional: Print the content (for debugging only, remove in production!)
+
+    # Set the GOOGLE_APPLICATION_CREDENTIALS environment variable
+    export GOOGLE_APPLICATION_CREDENTIALS="$PWD/gcp-key.json"
+
+    # Authenticate with gcloud and set the project
+    gcloud auth activate-service-account --key-file=gcp-key.json
+    gcloud config set project [YOUR_PROJECT_ID]
