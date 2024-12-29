@@ -3,7 +3,7 @@ name: Trigger Python Scripts on Any Change
 on:
   push:  # Trigger workflow on any push event in the repository
     branches:
-      - main       # Specify the branch (e.g., main). You can adjust this based on your branch.
+      - main  # Specify the branch (e.g., main). Adjust this if needed.
 
 jobs:
   run-python-scripts:
@@ -33,23 +33,28 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      # Step 5: Identify new files and run corresponding Python scripts
-      - name: Identify and Process New Files
+      # Step 5: Identify and Process Changed Files
+      - name: Identify and Process Changed Files
         env:
           GITHUB_SHA: ${{ github.sha }}
         run: |
-          # Fetch the list of new/changed files
-          NEW_FILES=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }} -- 'data_ingestion/**/*' 'configs/**/*')
+          # Default to processing all files if the previous commit is invalid
+          if git cat-file -e ${{ github.event.before }} 2>/dev/null; then
+            CHANGED_FILES=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }})
+          else
+            echo "Previous commit not found. Defaulting to all files in the repository."
+            CHANGED_FILES=$(git ls-files)
+          fi
           
-          if [ -z "$NEW_FILES" ]; then
-            echo "No new or modified files to process."
+          if [ -z "$CHANGED_FILES" ]; then
+            echo "No files to process."
             exit 0
           fi
 
-          echo "Processing the following new files:"
-          echo "$NEW_FILES"
+          echo "Processing the following files:"
+          echo "$CHANGED_FILES"
 
-          for FILE in $NEW_FILES; do
+          for FILE in $CHANGED_FILES; do
             echo "Running script for $FILE..."
             python path/to/your_script.py --file $FILE
           done
