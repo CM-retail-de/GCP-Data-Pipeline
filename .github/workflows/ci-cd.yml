@@ -7,8 +7,8 @@ on:
   pull_request:
 
 jobs:
-  execute-python-scripts:
-    name: Execute All GCP Python Scripts
+  execute-modified-scripts:
+    name: Execute Modified GCP Python Scripts
     runs-on: ubuntu-latest
 
     steps:
@@ -25,7 +25,24 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
 
-    - name: Execute All Python Scripts
+    - name: Identify Modified Python Scripts
+      id: identify_scripts
+      run: |
+        # Find modified Python scripts in the last commit
+        MODIFIED_FILES=$(git diff --name-only HEAD^ HEAD | grep '.py$' || echo "")
+        
+        if [ -z "$MODIFIED_FILES" ]; then
+          echo "No Python scripts modified."
+          echo "run_scripts=false" >> $GITHUB_ENV
+        else
+          echo "Modified Python scripts:"
+          echo "$MODIFIED_FILES"
+          echo "$MODIFIED_FILES" >> modified_scripts.txt
+          echo "run_scripts=true" >> $GITHUB_ENV
+        fi
+
+    - name: Execute Modified Python Scripts
+      if: env.run_scripts == 'true'
       env:
         SERVICE_ACCOUNT_KEY: ${{ secrets.GCP_CREDENTIALS }}
       run: |
@@ -35,10 +52,13 @@ jobs:
         # Set GOOGLE_APPLICATION_CREDENTIALS for GCP authentication
         export GOOGLE_APPLICATION_CREDENTIALS=service-account-key.json
 
-        # Find and execute all Python scripts
-        find . -type f -name "*.py" -exec python {} \;
+        # Read the list of modified scripts and execute them
+        while read -r script; do
+          echo "Executing $script..."
+          python "$script"
+        done < modified_scripts.txt
 
     - name: Clean Up
       run: |
         # Remove sensitive files
-        rm service-account-key.json
+        rm -f service-account-key.json modified_scripts.txt
