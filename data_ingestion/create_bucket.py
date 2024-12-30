@@ -1,17 +1,7 @@
 from google.cloud import storage
 
 def create_bucket(bucket_name, location="US", storage_class="STANDARD"):
-    """
-    Creates a new bucket in Google Cloud Storage.
-
-    Args:
-        bucket_name (str): The name of the bucket to create (must be unique globally).
-        location (str): The location/region for the bucket (default: "US").
-        storage_class (str): The storage class for the bucket (default: "STANDARD").
-    
-    Returns:
-        Bucket: The created bucket object.
-    """
+ 
     try:
         # Initialize a GCS client
         client = storage.Client()
