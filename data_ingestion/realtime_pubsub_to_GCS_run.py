@@ -5,7 +5,7 @@ from datetime import datetime
 #Configuration test
 
 PROJECT_ID = "xenon-aspect-444204-a3"
-SUBSCRIPTION_NAME ="projects/xenon-aspect-444204-a3/subscriptions/test-sub"
+SUBSCRIPTION_NAME ="test-sub"
 BUCKET_NAME = " my-first-gcs-bucket-chandra-name"
 FILE_PREFIX = "pubsub_data"
 
