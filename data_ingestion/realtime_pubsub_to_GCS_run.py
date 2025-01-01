@@ -38,6 +38,7 @@ def callback(message):
     except Exception as e:
         print(f"failed to upload file to GCS: {e}")
 
+import time
 
 def main():
     #Subscribe to the Pub/Sub subscription
