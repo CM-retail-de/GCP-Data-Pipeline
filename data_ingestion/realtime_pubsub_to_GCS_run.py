@@ -55,7 +55,7 @@ def main():
         upload_to_GCS()  #Ensure file upload on termination
 
 
-if __name__ = "__main__":
+if __name__ == "__main__":
     main()
 
 #Test1
