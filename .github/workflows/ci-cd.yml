@@ -28,9 +28,12 @@ jobs:
     - name: Identify Modified Python Scripts
       id: identify_scripts
       run: |
-        # Find modified Python scripts in the last commit
-        MODIFIED_FILES=$(git diff --name-only HEAD^ HEAD | grep '.py$' || echo "")
-        
+        # Ensure the full history is available
+        git fetch --unshallow || true
+
+        # Find modified Python scripts (handle cases where no HEAD^ exists)
+        MODIFIED_FILES=$(git diff --name-only ${GITHUB_BASE_REF}...${GITHUB_HEAD_REF} | grep '.py$' || echo "")
+
         if [ -z "$MODIFIED_FILES" ]; then
           echo "No Python scripts modified."
           echo "run_scripts=false" >> $GITHUB_ENV
