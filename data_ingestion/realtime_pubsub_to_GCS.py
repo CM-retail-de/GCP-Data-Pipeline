@@ -2,7 +2,7 @@ import os
 from google.cloud import pubsub_v1, storage
 from datetime import datetime
 
-#Configuration
+#Configuration test
 
 PROJECT_ID = "xenon-aspect-444204-a3"
 SUBSCRIPTION_NAME ="projects/xenon-aspect-444204-a3/subscriptions/test-sub"
