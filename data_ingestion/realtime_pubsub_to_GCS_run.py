@@ -44,6 +44,8 @@ def main():
     subscription_path = subscriber.subscription_path(PROJECT_ID,SUBSCRIPTION_NAME)
     print(f"Listening for message on {subscription_path}...")
 
+    time.sleep(60)
+
     #Use a streaming pull for contineous listening
 
     streaming_pull_feature = subscriber.subscribe(subscription_path, callback=callback)
