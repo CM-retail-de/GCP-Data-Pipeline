@@ -3,3 +3,4 @@ google-cloud-bigquery
 apache-beam
 pytest
 pyspark
+pubsub_v1
