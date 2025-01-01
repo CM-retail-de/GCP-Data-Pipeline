@@ -7,8 +7,8 @@ on:
   pull_request:
 
 jobs:
-  execute-modified-scripts:
-    name: Execute Modified GCP Python Scripts
+  execute-run-scripts:
+    name: Execute All GCP Python Scripts Ending with run.py
     runs-on: ubuntu-latest
 
     steps:
@@ -25,27 +25,7 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
 
-    - name: Identify Modified Python Scripts
-      id: identify_scripts
-      run: |
-        # Ensure the full history is available
-        git fetch --unshallow || true
-
-        # Find modified Python scripts (handle cases where no HEAD^ exists)
-        MODIFIED_FILES=$(git diff --name-only ${GITHUB_BASE_REF}...${GITHUB_HEAD_REF} | grep '.py$' || echo "")
-
-        if [ -z "$MODIFIED_FILES" ]; then
-          echo "No Python scripts modified."
-          echo "run_scripts=false" >> $GITHUB_ENV
-        else
-          echo "Modified Python scripts:"
-          echo "$MODIFIED_FILES"
-          echo "$MODIFIED_FILES" >> modified_scripts.txt
-          echo "run_scripts=true" >> $GITHUB_ENV
-        fi
-
-    - name: Execute Modified Python Scripts
-      if: env.run_scripts == 'true'
+    - name: Execute All Python Scripts Ending with run.py
       env:
         SERVICE_ACCOUNT_KEY: ${{ secrets.GCP_CREDENTIALS }}
       run: |
@@ -55,13 +35,13 @@ jobs:
         # Set GOOGLE_APPLICATION_CREDENTIALS for GCP authentication
         export GOOGLE_APPLICATION_CREDENTIALS=service-account-key.json
 
-        # Read the list of modified scripts and execute them
-        while read -r script; do
+        # Find and execute all Python scripts ending with 'run.py'
+        find . -type f -name "*run.py" -print0 | while IFS= read -r -d '' script; do
           echo "Executing $script..."
           python "$script"
-        done < modified_scripts.txt
+        done
 
     - name: Clean Up
       run: |
         # Remove sensitive files
-        rm -f service-account-key.json modified_scripts.txt
+        rm -f service-account-key.json
