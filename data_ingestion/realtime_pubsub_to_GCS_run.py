@@ -41,7 +41,7 @@ def callback(message):
 
 def main():
     #Subscribe to the Pub/Sub subscription
-    subscription_path = susbcriber.subscription_path(PROJECT_ID,SUBSCRIPTION_NAME)
+    subscription_path = subscriber.subscription_path(PROJECT_ID,SUBSCRIPTION_NAME)
     print(f"Listening for message on {subscription_path}...")
 
     #Use a streaming pull for contineous listening
