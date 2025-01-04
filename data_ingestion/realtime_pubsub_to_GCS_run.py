@@ -41,22 +41,21 @@ def callback(message):
 import time
 
 def main():
-    #Subscribe to the Pub/Sub subscription
-    subscription_path = subscriber.subscription_path(PROJECT_ID,SUBSCRIPTION_NAME)
-    print(f"Listening for message on {subscription_path}...")
+    subscription_path = subscriber.subscription_path(PROJECT_ID, SUBSCRIPTION_NAME)
+    print(f"Fetching messages from {subscription_path}...")
 
-    time.sleep(60)
+    # Use synchronous pull
+    response = subscriber.pull(
+        request={"subscription": subscription_path, "max_messages": 10}
+    )
 
-    #Use a streaming pull for contineous listening
+    for received_message in response.received_messages:
+        print(f"Received message: {received_message.message.data.decode('utf-8')}")
+        subscriber.acknowledge(
+            request={"subscription": subscription_path, "ack_ids": [received_message.ack_id]}
+        )
 
-    streaming_pull_feature = subscriber.subscribe(subscription_path, callback=callback)
-
-    try:
-        streaming_pull_feature.result() #keep the subscriber listening
-    except keyboardInterrupt:
-        streaming_pull_feature.cancel() #Stop listening on interrrupt
-        upload_to_GCS()  #Ensure file upload on termination
-
+    print("Finished processing messages.")
 
 if __name__ == "__main__":
     main()
